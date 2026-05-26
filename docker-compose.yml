@@ -1,0 +1,19 @@
+version: '3.8'
+services:
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 
+      MYSQL_DATABASE: uas_spk
+    ports:
+      - "3306:3306"
+  
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=mysql+pymysql://root:password@db:3306/uas_spk
