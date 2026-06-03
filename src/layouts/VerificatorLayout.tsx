@@ -1,0 +1,1 @@
+export { DashboardLayout as VerificatorLayout } from '@/components/layout/DashboardLayout';

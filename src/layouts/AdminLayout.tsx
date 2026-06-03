@@ -1,0 +1,1 @@
+export { DashboardLayout as AdminLayout } from '@/components/layout/DashboardLayout';

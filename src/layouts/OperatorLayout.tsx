@@ -1,0 +1,1 @@
+export { DashboardLayout as OperatorLayout } from '@/components/layout/DashboardLayout';
