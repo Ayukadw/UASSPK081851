@@ -5,14 +5,23 @@ def calculate_ahp(matrix_data: dict, criteria_ids: list):
     matrix_data: { crit_id_1: { crit_id_2: value, ... }, ... }
     Returns: dict of weights, CI, CR, is_valid
     """
+    # Standardisasi format key menjadi string untuk mencegah KeyError
+    str_matrix_data = {
+        str(k1): {str(k2): float(v) for k2, v in v1.items()} 
+        for k1, v1 in matrix_data.items()
+    }
+    
     n = len(criteria_ids)
     matrix = np.ones((n, n))
     
     # Fill matrix
     for i, cid_row in enumerate(criteria_ids):
         for j, cid_col in enumerate(criteria_ids):
-            if cid_row in matrix_data and str(cid_col) in matrix_data[str(cid_row)]:
-                matrix[i, j] = matrix_data[str(cid_row)][str(cid_col)]
+            str_row, str_col = str(cid_row), str(cid_col)
+            
+            # Cek ke dictionary yang sudah distandardisasi (BUKAN matrix_data yang lama)
+            if str_row in str_matrix_data and str_col in str_matrix_data[str_row]:
+                matrix[i, j] = str_matrix_data[str_row][str_col]
                 matrix[j, i] = 1.0 / matrix[i, j] # Reciprocal
 
     # Normalize column
@@ -33,9 +42,12 @@ def calculate_ahp(matrix_data: dict, criteria_ids: list):
     
     weight_dict = {criteria_ids[i]: float(weights[i]) for i in range(n)}
     
+    # PERUBAHAN: Bungkus hasil evaluasi NumPy (cr < 0.1) dengan fungsi bool() bawaan Python
+    is_valid_bool = bool(cr < 0.1)
+    
     return {
         "weights": weight_dict,
         "ci": float(ci),
         "cr": float(cr),
-        "is_valid": cr < 0.1
+        "is_valid": is_valid_bool
     }
