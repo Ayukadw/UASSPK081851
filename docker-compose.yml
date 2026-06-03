@@ -4,8 +4,8 @@ services:
     image: mysql:8.0
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: 
-      MYSQL_DATABASE: uas_spk
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: spk_ahp_marcos
     ports:
       - "3306:3306"
   
@@ -16,4 +16,4 @@ services:
     depends_on:
       - db
     environment:
-      - DATABASE_URL=mysql+pymysql://root:password@db:3306/uas_spk
+      - DATABASE_URL=mysql+pymysql://root:password@db:3306/spk_ahp_marcos

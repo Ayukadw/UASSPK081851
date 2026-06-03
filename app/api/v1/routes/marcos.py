@@ -1,11 +1,43 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.core.dependencies import get_db, RoleChecker
-from app.models.all_models import Criteria, DecisionMatrix, MarcosResult, AHPStatus, SystemLog
+from app.models.all_models import Criteria, DecisionMatrix, MarcosResult, AHPStatus, SystemLog, Alternative
 from app.algorithms.marcos import calculate_marcos
 
 router = APIRouter()
 allow_data_admin = RoleChecker(["Data_Admin", "IT_Admin"])
+
+
+def _serialize_marcos_results(db: Session) -> list[dict]:
+    rows = (
+        db.query(MarcosResult)
+        .join(Alternative, MarcosResult.alternative_id == Alternative.id)
+        .order_by(MarcosResult.ranking.asc())
+        .all()
+    )
+    return [
+        {
+            "alternative_id": row.alternative_id,
+            "alternative_name": row.alternative.name,
+            "score": row.utility_f,
+            "rank": row.ranking,
+            "k_i_plus": row.utility_k_plus,
+            "k_i_minus": row.utility_k_minus,
+            "f_i_plus": row.utility_k_plus,
+            "f_i_minus": row.utility_k_minus,
+        }
+        for row in rows
+    ]
+
+
+@router.get("/ranking")
+def get_marcos_ranking(db: Session = Depends(get_db)):
+    return {"success": True, "data": _serialize_marcos_results(db)}
+
+
+@router.get("/result")
+def get_marcos_result(db: Session = Depends(get_db)):
+    return {"success": True, "data": _serialize_marcos_results(db)}
 
 @router.post("/calculate")
 def calculate_marcos_route(db: Session = Depends(get_db), current_user = Depends(allow_data_admin)):
