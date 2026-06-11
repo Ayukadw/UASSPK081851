@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from typing import Dict
 from pydantic import BaseModel
 from app.core.dependencies import get_db, RoleChecker
-from app.models.all_models import Criteria, SystemLog
+from app.models.all_models import Criteria, SystemLog, AHPStatus
 from app.schemas.all_schemas import AHPMatrixInput
 from app.algorithms.ahp import calculate_ahp
 
@@ -66,15 +66,26 @@ def calculate_ahp_matrix(
                         detail=f"Manipulasi terdeteksi pada {i} vs {j}. Diharapkan {expected_ji}, tapi menerima {val_ji}"
                     )
                 
-        db.add(SystemLog(
+    db.add(SystemLog(
         user_id=current_user.id, 
         action=f"Verificator {current_user.username} melakukan kalkulasi matriks AHP"
-        ))
-        db.commit()
+    ))
+    db.commit()
 
     # 3. PROSES ALGORITMA (Jika semua inspeksi keamanan lolos)
     try:
         result = calculate_ahp(matrix_payload, [int(c) for c in criteria_ids])
+        
+        # Save or update in ahp_status table
+        ahp_status = db.query(AHPStatus).first()
+        if not ahp_status:
+            ahp_status = AHPStatus()
+            db.add(ahp_status)
+        ahp_status.matrix_data = matrix_payload
+        ahp_status.cr_value = result["cr"]
+        ahp_status.is_locked = False
+        db.commit()
+
         return {
             "message": "Matriks lolos inspeksi keamanan matematis. Perhitungan AHP berhasil.",
             "data": result
@@ -97,6 +108,16 @@ def finalize_ahp(
         for crit_id, weight in data.weights.items():
             db.query(Criteria).filter(Criteria.id == crit_id).update({"weight": weight})
         
+        # Update lock state in ahp_status table
+        from datetime import datetime
+        ahp_status = db.query(AHPStatus).first()
+        if not ahp_status:
+            ahp_status = AHPStatus()
+            db.add(ahp_status)
+        ahp_status.is_locked = True
+        ahp_status.locked_by = current_user.id
+        ahp_status.locked_at = datetime.utcnow()
+
         # Catat aktivitas di System Log untuk audit trail
         db.add(SystemLog(
             user_id=current_user.id, 

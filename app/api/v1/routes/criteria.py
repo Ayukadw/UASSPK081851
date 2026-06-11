@@ -34,6 +34,8 @@ def update_criteria(criteria_id: int, criteria_data: dict, db: Session = Depends
         criteria.name = criteria_data["name"]
     if "type" in criteria_data:
         criteria.type = criteria_data["type"]
+    if "unit" in criteria_data:
+        criteria.unit = criteria_data["unit"]
         
     db.commit()
     db.refresh(criteria)
