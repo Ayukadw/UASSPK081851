@@ -14,10 +14,8 @@ const breadcrumbMap: Record<string, string> = {
   '/verificator/ahp-input': 'Input AHP',
   '/verificator/ahp-result': 'Hasil AHP',
   '/operator': 'Operator',
-  '/operator/dashboard': 'Dashboard',
-  '/operator/alternatives': 'Alternatif',
-  '/operator/decision-matrix': 'Decision Matrix',
-  '/operator/marcos-result': 'Hasil MARCOS',
+  '/operator/dashboard': 'Data Alternatif',
+  '/operator/alternatives': 'Kelola Alternatif',
   '/ranking': 'Ranking Publik',
   '/simulation': 'Simulasi',
 };

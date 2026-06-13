@@ -13,13 +13,13 @@ interface AHPMatrixTableProps {
 
 export const AHPMatrixTable = ({ criteria, matrix, onChange, disabled }: AHPMatrixTableProps) => {
   const columns = [
-    { title: 'Kriteria', dataIndex: 'name', key: 'name', fixed: 'left', width: 140 },
+    { title: 'Kriteria', dataIndex: 'name', key: 'name', fixed: 'left' as const, width: 140 },
     ...criteria.map((c, idx) => ({
       title: c.code,
       dataIndex: c.code,
       key: c.code,
       width: 100,
-      render: (_: any, record: any, rowIndex: number) => {
+      render: (_value: any, _record: any, rowIndex: number) => {
         if (rowIndex === idx) return <Text strong>1</Text>;
         if (rowIndex > idx) {
           const val = matrix[rowIndex]?.[idx];

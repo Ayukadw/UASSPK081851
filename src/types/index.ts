@@ -18,6 +18,7 @@ export interface Criteria {
   type: 'Cost' | 'Benefit';
   description?: string;
   weight?: number;
+  unit?: string;
   created_at?: string;
 }
 

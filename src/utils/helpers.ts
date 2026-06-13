@@ -26,7 +26,7 @@ export const downloadBlob = (blob: Blob, filename: string) => {
 
 export const getRoleBasedHome = (role: string) => {
   if (role === 'admin' || role === 'IT_Admin') return '/admin/dashboard';
-  if (role === 'Verificator') return '/verificator/dashboard';
+  if (role === 'Verificator') return '/verificator/ahp-input';
   if (role === 'Data_Admin') return '/operator/dashboard';
   return '/'; 
 };

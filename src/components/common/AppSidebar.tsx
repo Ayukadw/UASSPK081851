@@ -5,7 +5,6 @@ import { useUIStore } from '@/store/uiStore';
 import {
   DashboardOutlined,
   TeamOutlined,
-  CheckCircleOutlined,
   SettingOutlined,
   AppstoreOutlined,
   TableOutlined,
@@ -23,9 +22,7 @@ const menuConfig: Record<UserRole, any[]> = {
     { key: '/admin/criteria', icon: <SettingOutlined />, label: 'Manajemen Kriteria' },
   ],
   Verificator: [
-    { key: '/verificator/dashboard', icon: <DashboardOutlined />, label: 'Dashboard' },
-    { key: '/verificator/ahp-input', icon: <TableOutlined />, label: 'Input Matriks AHP' },
-    { key: '/verificator/ahp-result', icon: <CheckCircleOutlined />, label: 'Hasil AHP' },
+    { key: '/verificator/ahp-input', icon: <TableOutlined />, label: 'Input Bobot' },
   ],
   Data_Admin: [
     { key: '/operator/dashboard', icon: <DashboardOutlined />, label: 'Dashboard' },

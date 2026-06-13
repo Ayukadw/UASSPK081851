@@ -15,7 +15,7 @@ export const DecisionMatrixTable = ({
   onChange,
 }: DecisionMatrixTableProps) => {
   const columns = [
-    { title: 'Alternatif', dataIndex: 'name', key: 'name', fixed: 'left', width: 180 },
+    { title: 'Alternatif', dataIndex: 'name', key: 'name', fixed: 'left' as const, width: 180 },
     ...criteria.map((c) => ({
       title: `${c.code} (${c.type})`,
       dataIndex: c.id,

@@ -11,7 +11,7 @@ export const useUsers = () => {
     setLoading(true);
     try {
       const res = await UserService.getAll();
-      setUsers(res.data.data);
+      setUsers(res.data);
     } catch (err: any) {
       setError(err?.response?.data?.message || 'Gagal memuat user');
     } finally {

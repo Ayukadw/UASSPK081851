@@ -10,23 +10,24 @@ import { PublicLayout } from '@/layouts/PublicLayout';
 
 import { LoginPage } from '@/pages/auth/LoginPage';
 
-import { AdminDashboard } from '@/pages/admin/AdminDashboard';
-import { UserManagement } from '@/pages/admin/UserManagement';
-import { CriteriaManagement } from '@/pages/admin/CriteriaManagement';
+import { KelolaUser } from '@/pages/admin/KelolaUser';
+import { KelolaKriteria } from '@/pages/admin/KelolaKriteria';
+import type { UserRole } from '@/types';
 
-import { VerificatorDashboard } from '@/pages/verificator/VerificatorDashboard';
-import { AHPInputPage } from '@/pages/verificator/AHPInputPage';
-import { AHPResultPage } from '@/pages/verificator/AHPResultPage';
+import { PembobotanKriteria } from '@/pages/verificator/PembobotanKriteria';
 
-import { OperatorDashboard } from '@/pages/operator/OperatorDashboard';
-import { AlternativeManagement } from '@/pages/operator/AlternativeManagement';
-import { DecisionMatrixPage } from '@/pages/operator/DecisionMatrixPage';
-import { MARCOSResultPage } from '@/pages/operator/MARCOSResultPage';
+import { InputDataAlternatif } from '@/pages/operator/InputDataAlternatif';
+import { KelolaAlternatif } from '@/pages/operator/KelolaAlternatif';
 
-import { PublicRankingPage } from '@/pages/public/PublicRankingPage';
-import { PublicSimulationPage } from '@/pages/public/PublicSimulationPage';
+import { InputData } from '@/pages/public/InputData';
+import { MatrixKeputusan } from '@/pages/public/MatrixKeputusan';
+import { SolusiIdealAntiIdeal } from '@/pages/public/SolusiIdealAntiIdeal';
+import { NormalisasiMatrixKeputusan } from '@/pages/public/NormalisasiMatrixKeputusan';
+import { NormalisasiTerbobot } from '@/pages/public/NormalisasiTerbobot';
+import { TingkatUtilitasAlternatif } from '@/pages/public/TingkatUtilitasAlternatif';
+import { FungsiUtilitas } from '@/pages/public/FungsiUtilitas';
 
-import { UnauthorizedPage } from '@/pages/common/UnauthorizedPage';
+import { UnauthorizedPage } from '@/pages/common/Unauthorizedpage';
 import { NotFoundPage } from '@/pages/common/NotFoundPage';
 
 export const AppRoutes = () => (
@@ -36,17 +37,22 @@ export const AppRoutes = () => (
     </Route>
 
     <Route element={<PublicLayout />}>
-      <Route path="/" element={<PublicRankingPage />} />
-      <Route path="/ranking" element={<PublicRankingPage />} />
-      <Route path="/simulation" element={<PublicSimulationPage />} />
+      <Route path="/" element={<InputData />} />
+      <Route path="/ranking" element={<InputData />} />
+      <Route path="/ranking/matrix-keputusan" element={<MatrixKeputusan />} />
+      <Route path="/ranking/solusi-ideal-anti-ideal" element={<SolusiIdealAntiIdeal />} />
+      <Route path="/ranking/normalisasi-matrix-keputusan" element={<NormalisasiMatrixKeputusan />} />
+      <Route path="/ranking/normalisasi-terbobot" element={<NormalisasiTerbobot />} />
+      <Route path="/ranking/tingkat-utilitas-alternatif" element={<TingkatUtilitasAlternatif />} />
+      <Route path="/ranking/fungsi-utilitas" element={<FungsiUtilitas />} />
     </Route>
 
     <Route element={<ProtectedRoute />}>
-      <Route element={<RoleRoute allowedRoles={['IT_Admin','admin']} />}>
+      <Route element={<RoleRoute allowedRoles={['IT_Admin', 'admin'] as UserRole[]} />}>
         <Route element={<AdminLayout />}>
-          <Route path="/admin/dashboard" element={<AdminDashboard />} />
-          <Route path="/admin/users" element={<UserManagement />} />
-          <Route path="/admin/criteria" element={<CriteriaManagement />} />
+          <Route path="/admin/dashboard" element={<KelolaUser />} />
+          <Route path="/admin/users" element={<KelolaUser />} />
+          <Route path="/admin/criteria" element={<KelolaKriteria />} />
         </Route>
       </Route>
     </Route>
@@ -54,9 +60,7 @@ export const AppRoutes = () => (
     <Route element={<ProtectedRoute />}>
       <Route element={<RoleRoute allowedRoles={['Verificator']} />}>
         <Route element={<VerificatorLayout />}>
-          <Route path="/verificator/dashboard" element={<VerificatorDashboard />} />
-          <Route path="/verificator/ahp-input" element={<AHPInputPage />} />
-          <Route path="/verificator/ahp-result" element={<AHPResultPage />} />
+          <Route path="/verificator/ahp-input" element={<PembobotanKriteria />} />
         </Route>
       </Route>
     </Route>
@@ -64,10 +68,8 @@ export const AppRoutes = () => (
     <Route element={<ProtectedRoute />}>
       <Route element={<RoleRoute allowedRoles={['Data_Admin']} />}>
         <Route element={<OperatorLayout />}>
-          <Route path="/operator/dashboard" element={<OperatorDashboard />} />
-          <Route path="/operator/alternatives" element={<AlternativeManagement />} />
-          <Route path="/operator/decision-matrix" element={<DecisionMatrixPage />} />
-          <Route path="/operator/marcos-result" element={<MARCOSResultPage />} />
+          <Route path="/operator/dashboard" element={<InputDataAlternatif />} />
+          <Route path="/operator/alternatives" element={<KelolaAlternatif />} />
         </Route>
       </Route>
     </Route>

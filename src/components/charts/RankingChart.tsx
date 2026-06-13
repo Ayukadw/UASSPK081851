@@ -14,7 +14,7 @@ export const RankingChart = ({ data }: RankingChartProps) => {
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis type="number" domain={[0, 1]} />
         <YAxis dataKey="alternative_name" type="category" width={120} />
-        <Tooltip formatter={(value: number) => value.toFixed(4)} />
+        <Tooltip formatter={(value: any) => (typeof value === 'number' ? value.toFixed(4) : value)} />
         <Bar dataKey="score" radius={[0, 4, 4, 0]}>
           {data.map((_, index) => (
             <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
