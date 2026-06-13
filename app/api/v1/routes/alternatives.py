@@ -35,13 +35,13 @@ class AlternativeResponse(BaseModel):
 # ==========================================
 
 # 1. READ ALL (Ambil Semua Data Alternatif)
-@router.get("/", response_model=List[AlternativeResponse], dependencies=[Depends(allow_all_authenticated)])
+@router.get("/", response_model=List[AlternativeResponse])
 def get_all_alternatives(db: Session = Depends(get_db)):
     return db.query(Alternative).order_by(Alternative.id.asc()).all()
 
 
 # 2. READ SINGLE (Ambil 1 Data Alternatif Berdasarkan ID)
-@router.get("/{alt_id}", response_model=AlternativeResponse, dependencies=[Depends(allow_all_authenticated)])
+@router.get("/{alt_id}", response_model=AlternativeResponse)
 def get_alternative_by_id(alt_id: int, db: Session = Depends(get_db)):
     alt = db.query(Alternative).filter(Alternative.id == alt_id).first()
     if not alt:
