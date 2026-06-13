@@ -129,7 +129,7 @@ def _process_marcos_steps(db: Session):
 
 
 # ==========================================
-# 7 ENDPOINTS STEP-BY-STEP UNTUK FRONTEND
+# 7 ENDPOINTS STEP-BY-STEP PUBLIK (TANPA LOGIN)
 # ==========================================
 
 @router.get("/step1-decision-matrix")
@@ -162,7 +162,7 @@ def get_step7(db: Session = Depends(get_db)):
 
 
 # ==========================================
-# ENDPOINT TRIGGER UTAMA (UNTUK SIMPAN KE DB)
+# ENDPOINT TRIGGER UTAMA (TERKUNCI UNTUK ADMIN DATA)
 # ==========================================
 @router.post("/calculate")
 def calculate_marcos_route(db: Session = Depends(get_db), current_user = Depends(allow_data_admin)):
