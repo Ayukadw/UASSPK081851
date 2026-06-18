@@ -95,21 +95,30 @@ export const InputData = () => {
   const handleSaveWeights = async () => {
     try {
       setLoading(true);
+      // Simpan sementara di browser agar tidak hilang saat di-refresh
       localStorage.setItem('spk_simulator_weights', JSON.stringify(sliderValues));
       
-      // Hubungkan tombol simpan dengan API POST /api/v1/marcos/calculate
-      await MarcosService.calculate();
+      // 1. Ubah state sliderValues menjadi format JSON Array yang diminta Backend
+      const payload = {
+        custom_weights: Object.entries(sliderValues).map(([key, val]) => ({
+          criteria_id: parseInt(key),
+          value: val
+        }))
+      };
       
-      // Refresh barchart ranking dengan API GET /api/v1/marcos/step7-ranking
-      const resR = await MarcosService.getRanking();
-      if (resR && resR.data && resR.data.success) {
-        setRankingData(resR.data.data);
+      // 2. Panggil API Simulasi (Bukan calculate!)
+      const res = await MarcosService.simulate(payload);
+      
+      // 3. Perbarui state rankingData langsung dari hasil simulasi
+      if (res && res.data && res.data.success) {
+        setRankingData(res.data.data);
       }
+      
       setHasSaved(true);
-      message.success('Kalkulasi MARCOS backend berhasil diperbarui!');
+      message.success('Simulasi berhasil dihitung!');
     } catch (error: any) {
-      console.error('Gagal melakukan kalkulasi MARCOS:', error);
-      message.error(error.response?.data?.detail || 'Gagal melakukan kalkulasi MARCOS.');
+      console.error('Gagal melakukan simulasi MARCOS:', error);
+      message.error(error.response?.data?.detail || 'Gagal melakukan simulasi MARCOS.');
     } finally {
       setLoading(false);
     }
@@ -121,10 +130,17 @@ export const InputData = () => {
 
 
 
-  // Export handlers
+// Jalankan export PDF dengan mengirimkan payload slider terbaru
   const handlePdfExport = async () => {
     try {
-      const res = await ReportService.exportPdf();
+      const payload = {
+        custom_weights: Object.entries(sliderValues).map(([key, val]) => ({
+          criteria_id: parseInt(key),
+          value: val
+        }))
+      };
+      
+      const res = await ReportService.exportPdf(payload); // <-- Kirim payload ke sini
       downloadBlob(res.data, 'ranking_marcos.pdf');
       message.success('PDF berhasil diunduh');
     } catch {
@@ -132,9 +148,17 @@ export const InputData = () => {
     }
   };
 
+  // Jalankan export Excel dengan mengirimkan payload slider terbaru
   const handleExcelExport = async () => {
     try {
-      const res = await ReportService.exportExcel();
+      const payload = {
+        custom_weights: Object.entries(sliderValues).map(([key, val]) => ({
+          criteria_id: parseInt(key),
+          value: val
+        }))
+      };
+      
+      const res = await ReportService.exportExcel(payload); // <-- Kirim payload ke sini
       downloadBlob(res.data, 'ranking_marcos.xlsx');
       message.success('Excel berhasil diunduh');
     } catch {

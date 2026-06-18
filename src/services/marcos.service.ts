@@ -3,6 +3,7 @@ import type { MarcosResult, ApiResponse } from '@/types';
 
 export const MarcosService = {
   calculate: () => api.post<ApiResponse<any>>('/marcos/calculate'),
+  simulate: (payload: any) => api.post('/marcos/simulate', payload),
   getResult: () => api.get<ApiResponse<MarcosResult[]>>('/marcos/result'),
   getRanking: () => api.get<ApiResponse<any>>('/marcos/step7-ranking'),
   getStep1: () => api.get<ApiResponse<any>>('/marcos/step1-decision-matrix'),
