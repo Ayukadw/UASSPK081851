@@ -26,7 +26,7 @@ def get_users(
 def delete_user(
     user_id: int, 
     db: Session = Depends(dependencies.get_db),
-    current_user = Depends(allow_it_admin) # <-- Ditambahkan proteksi
+    current_user = Depends(allow_it_admin) 
 ):
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
@@ -42,6 +42,13 @@ def delete_user(
     username_deleted = user.username
     
     try:
+        # ==========================================
+        # SOLUSI: Bersihkan jejak relasi data (Cascade Delete)
+        # Hapus semua log aktivitas yang pernah dilakukan oleh user ini
+        # ==========================================
+        db.query(SystemLog).filter(SystemLog.user_id == user_id).delete()
+        
+        # Setelah jejaknya bersih, baru hapus akun User-nya
         db.delete(user)
         
         # Catat ke log sistem siapa yang menghapus siapa
@@ -51,13 +58,14 @@ def delete_user(
         ))
         
         db.commit()
-        return {"success": True, "message": f"Akun pengguna '{username_deleted}' berhasil dihapus dari sistem."}
+        return {"success": True, "message": f"Akun pengguna '{username_deleted}' berhasil dihapus permanen dari sistem."}
+        
     except IntegrityError:
-        # Batalkan transaksi jika terjadi error relasi database
+        # Jika masih ada relasi di tabel lain yang terlewat
         db.rollback()
         raise HTTPException(
             status_code=400, 
-            detail="Gagal menghapus! User ini tidak bisa dihapus karena masih terhubung dengan data lain (misalnya data Log aktivitas)."
+            detail="Gagal menghapus! User ini tidak bisa dihapus karena masih terhubung dengan data lain."
         )
 
 @router.post("/")
