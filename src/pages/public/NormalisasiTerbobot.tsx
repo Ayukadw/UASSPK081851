@@ -78,7 +78,7 @@ export const NormalisasiTerbobot = () => {
         title: 'Alternatif',
         dataIndex: 'alt_name',
         key: 'alt_name',
-        align: 'left',
+        align: 'center',
         render: (text: string) => (
           <span style={{ color: '#1D5EC9', fontWeight: 'bold', fontSize: '16px' }}>
             {text}
@@ -214,6 +214,7 @@ export const NormalisasiTerbobot = () => {
                 <td
                   {...props}
                   style={{
+                    ...props.style,
                     padding: '16px 8px',
                     borderBottom: '1px solid #e6f4ff',
                   }}

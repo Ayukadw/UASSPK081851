@@ -44,6 +44,24 @@ export const InputDataAlternatif = () => {
         }
       });
 
+      const saved = localStorage.getItem('unsaved_alternatif_values');
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          Object.keys(parsed).forEach((altId) => {
+            if (map[altId]) {
+              Object.keys(parsed[altId]).forEach((critId) => {
+                if (map[altId][critId] !== undefined) {
+                  map[altId][critId] = parsed[altId][critId];
+                }
+              });
+            }
+          });
+        } catch (e) {
+          console.error('Error parsing unsaved_alternatif_values', e);
+        }
+      }
+
       setValues(map);
     } catch (err) {
       console.error(err);
@@ -58,10 +76,14 @@ export const InputDataAlternatif = () => {
   }, []);
 
   const handleChange = (altId: number, critId: number, value: number) => {
-    setValues((prev) => ({
-      ...prev,
-      [altId]: { ...prev[altId], [critId]: value },
-    }));
+    setValues((prev) => {
+      const next = {
+        ...prev,
+        [altId]: { ...prev[altId], [critId]: value },
+      };
+      localStorage.setItem('unsaved_alternatif_values', JSON.stringify(next));
+      return next;
+    });
   };
 
   const handleSave = async () => {
@@ -86,6 +108,7 @@ export const InputDataAlternatif = () => {
       ]);
 
       if (res.data.success) {
+        localStorage.removeItem('unsaved_alternatif_values');
         setSaveStatus('success');
         await new Promise((resolve) => setTimeout(resolve, 1800));
       } else {
@@ -125,11 +148,42 @@ export const InputDataAlternatif = () => {
       align: 'center' as const,
       render: (_: any, record: Alternative) => {
         const val = values[record.id]?.[c.id] ?? 0;
+        
+        // Cek apakah kriteria merupakan mata uang / biaya
+        const isCurrency = 
+          c.unit?.toLowerCase().includes('rp') || 
+          c.unit?.toLowerCase().includes('rupiah') || 
+          c.name?.toLowerCase().includes('biaya') || 
+          c.name?.toLowerCase().includes('harga') ||
+          c.name?.toLowerCase().includes('gaji') ||
+          c.name?.toLowerCase().includes('tarif') ||
+          c.name?.toLowerCase().includes('ongkos');
+
         return (
           <InputNumber
             value={val}
             onChange={(v) => handleChange(record.id, c.id, v || 0)}
             controls={false}
+            formatter={(value) => {
+              if (value === undefined || value === null || value === '') return '';
+              if (isCurrency) {
+                const parts = `${value}`.split('.');
+                parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                return parts.join(',');
+              } else {
+                return `${value}`.replace(/\./g, ',');
+              }
+            }}
+            parser={(value) => {
+              if (!value) return 0;
+              if (isCurrency) {
+                const cleanValue = value.replace(/\./g, '').replace(/,/g, '.');
+                return parseFloat(cleanValue) || 0;
+              } else {
+                const cleanValue = value.replace(/,/g, '.');
+                return parseFloat(cleanValue) || 0;
+              }
+            }}
             className="alternative-cell-input"
             style={{
               width: '100%',

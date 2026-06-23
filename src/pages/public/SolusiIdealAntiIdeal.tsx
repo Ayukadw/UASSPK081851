@@ -58,7 +58,7 @@ export const SolusiIdealAntiIdeal = () => {
         title: 'Solusi',
         dataIndex: 'solusi_type',
         key: 'solusi_type',
-        align: 'left',
+        align: 'center',
         render: (text: string) => (
           <span style={{ color: '#1D5EC9', fontWeight: 'bold', fontSize: '16px' }}>
             {text}
@@ -179,6 +179,7 @@ export const SolusiIdealAntiIdeal = () => {
                 <td
                   {...props}
                   style={{
+                    ...props.style,
                     padding: '16px 8px',
                     borderBottom: '1px solid #e6f4ff',
                   }}

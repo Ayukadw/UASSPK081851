@@ -104,9 +104,39 @@ export const AdminLayout = () => {
           <span style={{ fontSize: '16px', fontWeight: '600', color: '#1D5EC9' }}>
             Selamat Datang, {user?.full_name || 'Administrator'} !
           </span>
-          <button className="admin-logout-btn" onClick={handleLogout}>
-            <LogoutOutlined className="admin-logout-icon" />
-            Keluar
+          <button
+            onClick={handleLogout}
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '6px',
+            }}
+          >
+            <div
+              style={{
+                border: '2px solid #ff4d4f',
+                borderRadius: '8px',
+                padding: '6px',
+                color: '#ff4d4f',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '18px',
+                transition: 'all 0.2s',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = '#fff2f0';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'none';
+              }}
+            >
+              <LogoutOutlined />
+            </div>
           </button>
         </Header>
 
