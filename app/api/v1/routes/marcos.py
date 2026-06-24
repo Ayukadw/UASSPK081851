@@ -61,7 +61,7 @@ def _process_marcos_steps(db: Session, custom_weights_dict: dict = None):
             anti_ideal[c.id] = max(vals)
     step2 = {"ideal": ideal, "anti_ideal": anti_ideal}
 
-    # TAHAP 3: Normalisasi Matriks Keputusan
+# TAHAP 3: Normalisasi Matriks Keputusan
     norm_matrix = {a.id: {} for a in alternatives}
     norm_ideal = {}
     norm_anti_ideal = {}
@@ -69,11 +69,13 @@ def _process_marcos_steps(db: Session, custom_weights_dict: dict = None):
         x_id = ideal[c.id]
         x_aa = anti_ideal[c.id]
         if c.type.value.lower() == 'benefit':
+            # KOREKSI: Dibagi dengan Solusi Ideal (x_id), bukan Anti-Ideal
             for a in alternatives:
-                norm_matrix[a.id][c.id] = matrix[a.id][c.id] / x_aa if x_aa != 0 else 0
-            norm_ideal[c.id] = x_id / x_aa if x_aa != 0 else 0
-            norm_anti_ideal[c.id] = x_aa / x_aa if x_aa != 0 else 0
+                norm_matrix[a.id][c.id] = matrix[a.id][c.id] / x_id if x_id != 0 else 0
+            norm_ideal[c.id] = x_id / x_id if x_id != 0 else 0
+            norm_anti_ideal[c.id] = x_aa / x_id if x_id != 0 else 0
         else: # Cost
+            # Cost tetap benar: Solusi Ideal dibagi dengan matriks
             for a in alternatives:
                 norm_matrix[a.id][c.id] = x_id / matrix[a.id][c.id] if matrix[a.id][c.id] != 0 else 0
             norm_ideal[c.id] = x_id / x_id if x_id != 0 else 0
@@ -106,23 +108,28 @@ def _process_marcos_steps(db: Session, custom_weights_dict: dict = None):
     ki_plus = {a.id: s_alt[a.id] / s_id if s_id != 0 else 0 for a in alternatives}
     step5 = {"s_alternatives": s_alt, "s_anti_ideal": s_aa, "s_ideal": s_id, "ki_minus": ki_minus, "ki_plus": ki_plus}
 
-    # TAHAP 6: Fungsi Utilitas f(Ki)
+# TAHAP 6: Fungsi Utilitas f(Ki)
     f_ki = {}
     for a in alternatives:
         km = ki_minus[a.id]
         kp = ki_plus[a.id]
+        
+        # 1. Menghitung f(Ki-) dan f(Ki+) untuk kebutuhan tampilan UI/Tabel
         denom = kp + km
         f_km = kp / denom if denom != 0 else 0
         f_kp = km / denom if denom != 0 else 0
         
-        term_p = (1 - f_kp) / kp if kp != 0 else 0
-        term_m = (1 - f_km) / km if km != 0 else 0
-        denom_final = 1 + term_p + term_m
-        
+        # 2. PERBAIKAN: Menghitung penyebut (denominator) f(Ki) dengan rumus akurat
+        if km != 0 and kp != 0:
+            denom_final = 1 + (kp / km) + (km / kp)
+            f_final = (kp + km) / denom_final
+        else:
+            f_final = 0
+            
         f_ki[a.id] = {
             "f_k_minus": f_km,
             "f_k_plus": f_kp,
-            "f_final": (kp + km) / denom_final if denom_final != 0 else 0
+            "f_final": f_final
         }
     step6 = f_ki
 
@@ -136,7 +143,11 @@ def _process_marcos_steps(db: Session, custom_weights_dict: dict = None):
             "utility_k_minus": ki_minus[a.id],
             "utility_k_plus": ki_plus[a.id]
         })
+        
+    # Mengurutkan dari skor terbesar ke terkecil
     ranking_list.sort(key=lambda x: x["score"], reverse=True)
+    
+    # Memberikan nomor urut peringkat (1, 2, 3, dst)
     for idx, item in enumerate(ranking_list):
         item["ranking"] = idx + 1
     step7 = ranking_list
