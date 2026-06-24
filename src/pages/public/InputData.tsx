@@ -53,6 +53,10 @@ export const InputData = () => {
         setAlternatives(altData);
         setCriteria(critData);
 
+        if (resR && resR.data && resR.data.success) {
+          setRankingData(resR.data.data);
+        }
+
         // Load & Initialize slider values
         const saved = localStorage.getItem('spk_simulator_weights');
         let initialWeights: Record<number, number> = {};
@@ -70,25 +74,6 @@ export const InputData = () => {
           }
         });
         setSliderValues(initialWeights);
-
-        // Load saved simulation ranking if it exists
-        const savedRanking = localStorage.getItem('spk_simulator_ranking_data');
-        const savedHasSaved = localStorage.getItem('spk_simulator_has_saved') === 'true';
-
-        if (savedRanking && savedHasSaved) {
-          try {
-            setRankingData(JSON.parse(savedRanking));
-            setHasSaved(true);
-          } catch {
-            if (resR && resR.data && resR.data.success) {
-              setRankingData(resR.data.data);
-            }
-          }
-        } else {
-          if (resR && resR.data && resR.data.success) {
-            setRankingData(resR.data.data);
-          }
-        }
 
       } catch (error) {
         console.error('Gagal memuat data simulator:', error);
@@ -124,11 +109,9 @@ export const InputData = () => {
       // 2. Panggil API Simulasi (Bukan calculate!)
       const res = await MarcosService.simulate(payload);
       
-      // 3. Perbarui state rankingData langsung dari hasil simulasi dan simpan ke localStorage
+      // 3. Perbarui state rankingData langsung dari hasil simulasi
       if (res && res.data && res.data.success) {
         setRankingData(res.data.data);
-        localStorage.setItem('spk_simulator_ranking_data', JSON.stringify(res.data.data));
-        localStorage.setItem('spk_simulator_has_saved', 'true');
       }
       
       setHasSaved(true);
