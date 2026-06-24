@@ -27,6 +27,7 @@ class Criteria(Base):
     code = Column(String(10), unique=True, index=True, nullable=False)
     name = Column(String(100), nullable=False)
     type = Column(Enum(CriteriaTypeEnum), nullable=False)
+    unit = Column(String, nullable=True)
     weight = Column(Float, default=0.0)
     created_at = Column(DateTime, default=datetime.utcnow)
 

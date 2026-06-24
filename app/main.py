@@ -46,6 +46,7 @@ class CriteriaBase(BaseModel):
     code: str
     name: str
     type: CriteriaTypeEnum
+    unit: Optional[str] = None  # <-- TAMBAHKAN INI (Ganti 'unit' jika nama di DB adalah 'unit')
 
 class CriteriaResponse(CriteriaBase):
     id: int
