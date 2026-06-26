@@ -3,7 +3,7 @@ import type { AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from 'a
 import { message } from 'antd';
 import { useAuthStore } from '@/store/authStore';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api/v1';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://jjk990-uas-spk.hf.space/api/v1';
 
 interface ApiErrorBody {
   message?: string;
@@ -11,8 +11,12 @@ interface ApiErrorBody {
 }
 
 export const api: AxiosInstance = axios.create({
-  baseURL: API_BASE_URL,
-  headers: { 'Content-Type': 'application/json' },
+  // Hardcode URL Ngrok sementara agar kita yakin 100% tidak tertimpa file .env
+  baseURL: 'https://jjk990-uas-spk.hf.space/api/v1',
+  headers: { 
+    'Content-Type': 'application/json',
+    'ngrok-skip-browser-warning': 'true' // <-- TIKET VIP NGROK (Wajib Ada)
+  },
   timeout: 30000,
 });
 
